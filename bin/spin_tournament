@@ -19,7 +19,7 @@ page = form.submit form.buttons.first
 
 # Create Games
 # players = [34,35,36,37,38,39,40,41,42,44,46]
-players = [34,35,36,38,39,40,41,42,44] #minus Nunes and JavaTest
+players = [34,35,36,38,39,40,41,42,44,20] #minus Nunes and JavaTest
 
 games = []
 while opponent = players.shift do

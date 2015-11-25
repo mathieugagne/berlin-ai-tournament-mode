@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'mechanize'
+
+require 'dotenv'
+Dotenv.load
+
+mech = Mechanize.new
+
+# Authenticate
+page = mech.get('http://berlin-ai.com/')
+page = mech.click page.link_with(:text => /Sign In/)
+form = page.forms[0]
+form["user[login]"] = ENV['BERLIN_LOGIN']
+form["user[password]"] = ENV['BERLIN_PASSWORD']
+form["user[remember_me]"] = '1'
+page = form.submit form.buttons.first
+
+# Create Games
+# players = [34,35,36,37,38,39,40,41,42,44,46]
+players = [34,35,36,38,39,40,41,42,44] #minus Nunes and JavaTest
+
+games = []
+while opponent = players.shift do
+  players.each do |player_id|
+    games << [opponent, player_id]
+  end
+end
+
+games.each do |players|
+  page = mech.get('http://berlin-ai.com/games/new')
+  form = page.forms[0]
+  form.add_field!('game[artificial_intelligence_ids][]', players[0])
+  form.add_field!('game[artificial_intelligence_ids][]', players[1])
+  page = form.submit form.buttons.first
+  puts "Created game between #{players[0]} and #{players[1]}"
+end
+
+puts "Created #{games.length} games"

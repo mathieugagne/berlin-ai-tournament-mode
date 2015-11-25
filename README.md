@@ -15,7 +15,8 @@ export BERLIN_PASSWORD= '<your password>'
 
 #### Spin a tournament
 
-Replace the player IDs with the ones you'd like to see battle in `bin/spin_tournament`
+Replace the player IDs with the ones you'd like to see battle in `bin/spin_tournament`.
+This script will create unique pairs of opponents and create a game 1vs1 on Default Map.
 
 ```
 $ bin/spin_tournament

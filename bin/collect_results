@@ -15,8 +15,8 @@ begin
     page = mech.get("http://berlin-ai.com/games/#{game_id}")
     home_player = page.root.css('tr#info_player_0 > td:nth-child(2) > a').first.text
     away_player = page.root.css('tr#info_player_1 > td:nth-child(2) > a').first.text
-    winner = page.root.css('#main > div:nth-child(1) > table > tbody > tr:nth-child(5) > td:nth-child(2)').map(&:text).join(' and ')
-    rows << [game_id, home_player, away_player, winner]
+    winners = page.root.css('#main > div:nth-child(1) > table > tbody > tr:nth-child(5) > td:nth-child(2)').map(&:text)
+    rows << [game_id, home_player, away_player, winners.join(' and ')]
     game_id = game_id + 1
   end
 
@@ -25,12 +25,30 @@ rescue Mechanize::ResponseCodeError
 end
 
 
-table = Terminal::Table.new :headings => ['Game ID', 'Home', 'Away', 'Winner'], :rows => rows
+table = Terminal::Table.new :headings => ['Game ID', 'Home', 'Away', 'Winners'], :rows => rows
 puts table
 
-players = rows.map{|r| r[3]}
-winners = players.inject(Hash.new(0)) { |h,e| h[e] += 1; h }
-winners = winners.sort_by{|_key, value| value}.reverse
 
-table = Terminal::Table.new :headings => ['Player', 'Wins'], :rows => winners
+players = rows.map{|r| r[3].split(' and ')}
+wins = Hash.new(0)
+draws = Hash.new(0)
+
+players.each do |p|
+  if p.length > 1
+    p.each do |winner|
+      draws[winner] += 1
+    end
+  else
+    wins[p.first] += 1
+  end
+end
+
+rows = []
+(wins.keys + draws.keys).uniq.each do |name|
+  rows << [name, wins[name], draws[name]]
+end
+
+rows = rows.sort{|x,y| y[1] <=> x[1]}
+
+table = Terminal::Table.new :headings => ['Player', 'Wins', 'Draws'], :rows => rows
 puts table

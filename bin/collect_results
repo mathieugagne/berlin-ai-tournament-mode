@@ -48,7 +48,7 @@ rows = []
   rows << [name, wins[name], draws[name]]
 end
 
-rows = rows.sort{|x,y| y[1] <=> x[1]}
+rows = rows.sort{|x,y| [y[1],y[2]] <=> [x[1],x[2]]}
 
 table = Terminal::Table.new :headings => ['Player', 'Wins', 'Draws'], :rows => rows
 puts table
